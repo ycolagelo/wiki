@@ -1,4 +1,7 @@
 from django.shortcuts import render
+from django.http import HttpResponse
+from django.views.decorators.http import require_http_methods
+
 
 from . import util
 
@@ -11,11 +14,16 @@ def index(request):
     })
 
 def entry(request, title):
-    try:
-        return render(request, "encyclopedia/entry.html", {
-            "title": title,
-            "entry": util.get_entry(title)
-        })
-    except FileNotFoundError:
-        return "Can not find the requested file"
+    entry = util.get_entry(title)
+    return render(request, "encyclopedia/entry.html", {
+        "title": title,
+        "entry": entry
+    })
+
+def details(request):
+    # title = title
+    print("todo")
+
+
+
 

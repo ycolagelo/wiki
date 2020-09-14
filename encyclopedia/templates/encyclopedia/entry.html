@@ -7,8 +7,14 @@
 {% block body %}
     <h1>{{ title }}</h1>
 
+
     <div>
+    {% if entry %}
         {{ entry }}
+    {% else %}
+        The requested file can not be found
+    {% endif %}
     </div>
+
 
 {% endblock %}
