@@ -26,7 +26,8 @@ SECRET_KEY = '%710m*zic)#0u((qugw#1@e^ty!c)9j04956v@ly(_86n$rg)h'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "c8174c6f-fd96-48c0-8180-34648dd73bd1-ide.cs50.xyz"
+    "c8174c6f-fd96-48c0-8180-34648dd73bd1-ide.cs50.xyz",
+    "127.0.0.1"
 ]
 
 
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'markdown_deux'
 ]
 
 MIDDLEWARE = [

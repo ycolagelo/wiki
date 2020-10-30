@@ -1,0 +1,20 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Add Page
+{% endblock %}
+
+{% block body %}
+    <h3> Add your page here</h3>
+    <form method ="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <input type = "text" class="form-control" name="title" placeholder = "page name">
+        </div>
+         <div class="form-group">
+            <textarea class="form-control" name="detail" rows="6" maxlength = "600"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+{% endblock %}

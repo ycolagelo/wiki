@@ -1,29 +1,97 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from django.http import HttpResponseBadRequest
 from django.views.decorators.http import require_http_methods
+from django import forms
+import markdown2
 
 
 from . import util
 
 
-
-
 def index(request):
+    """ Lists all the entries"""
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
     })
 
+
 def entry(request, title):
-    entry = util.get_entry(title)
+    """ displays details of the tile"""
+    my_entry = util.get_entry(title)
+    formatted = markdown2.markdown(my_entry)
     return render(request, "encyclopedia/entry.html", {
-        "title": title,
-        "entry": entry
+        "entry": formatted,
+        "title": title
     })
+
+
+def search(request):
+    """ The search view """
+    if 'q' in request.GET:
+        query = request.GET['q'].strip()
+        my_entry = util.get_entry(query)
+        possible_entries = util.search_entries(query)
+        if my_entry:
+            # redirect to entry
+            return redirect("entry", title=query)
+        if possible_entries:
+            # show search results page
+            return render(request, "encyclopedia/search.html", {"entries": possible_entries})
+    else:
+        return HttpResponseBadRequest("q is required")
+
+
+class NewEntryForm(forms.Form):
+    """adding a class for my form entry"""
+    title = forms.CharField(label="the title")
+    detail = forms.CharField(label="the details")
+
+
+def add(request):
+    """Handles the form by checking if the form is valid,
+    if it already exists and saves the form if it passes validation"""
+    if request.method == "POST":
+        form = NewEntryForm(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data["title"]
+            new_entry = form.cleaned_data["detail"]
+            current_list = util.list_entries()
+            if title in current_list:
+                return HttpResponseBadRequest("Title already exists in the encyclopedia")
+            else:
+                util.save_entry(title, new_entry)
+                return redirect("entry", title=title)
+        else:
+            return render(request, "encyclopedia/add.html", {
+                "form": form
+            })
+    return render(request, "encyclopedia/add.html", {
+        "form": NewEntryForm()
+    })
+
+
+def edit(request, title):
+    """Handles the editing of the existing page"""
+
+    if request.method == "POST":
+        form = NewEntryForm(request.POST)
+        if form.is_valid:
+            new_entry = form.cleaned_data["detail"]
+            util.save_entry(title, new_entry)
+            return redirect("entry", title=title)
+    else:
+        # GET
+        # title = request.Get["title"]
+        my_entry = util.get_entry(title)
+
+        return render(request, "encyclopedia/entry.html", {
+            "entry": my_entry
+        })
+    return render(request, "encyclopedia/edit.html", {
+        "entry": my_entry
+    })
+
 
 def details(request):
     # title = title
     print("todo")
-
-
-
-

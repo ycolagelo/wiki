@@ -5,16 +5,17 @@
 {% endblock %}
 
 {% block body %}
-    <h1>{{ title }}</h1>
+    {% comment %} <h1>{{ title }}</h1> {% endcomment %}
 
 
     <div>
-    {% if entry %}
-        {{ entry }}
-    {% else %}
-        The requested file can not be found
-    {% endif %}
+        {% if entry %}
+            {{ entry|safe }}
+        {% else %}
+            The requested file can not be found
+        {% endif %}
     </div>
+    <a href="{% url 'edit' title %}"> Edit page</a>
 
 
 {% endblock %}

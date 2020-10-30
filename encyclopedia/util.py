@@ -10,7 +10,17 @@ def list_entries():
     """
     _, filenames = default_storage.listdir("entries")
     return list(sorted(re.sub(r"\.md$", "", filename)
-                for filename in filenames if filename.endswith(".md")))
+                       for filename in filenames if filename.endswith(".md")))
+
+
+def search_entries(search_term):
+    """looks up entries containing the search term or query"""
+    entries = list_entries()
+    matches = []
+    for entry in entries:
+        if search_term.lower() in entry.lower():
+            matches.append(entry)
+    return matches
 
 
 def save_entry(title, content):
