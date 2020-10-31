@@ -18,11 +18,14 @@ def index(request):
 def entry(request, title):
     """ displays details of the tile"""
     my_entry = util.get_entry(title)
-    formatted = markdown2.markdown(my_entry)
-    return render(request, "encyclopedia/entry.html", {
-        "entry": formatted,
-        "title": title
-    })
+    if my_entry:
+        formatted = markdown2.markdown(my_entry)
+        return render(request, "encyclopedia/entry.html", {
+            "entry": formatted,
+            "title": title
+        })
+
+    return HttpResponseBadRequest("The page requested was not found")
 
 
 def search(request):
