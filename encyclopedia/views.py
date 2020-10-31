@@ -1,6 +1,6 @@
+from random import choice
 from django.shortcuts import render, redirect
 from django.http import HttpResponseBadRequest
-from django.views.decorators.http import require_http_methods
 from django import forms
 import markdown2
 
@@ -47,6 +47,11 @@ class NewEntryForm(forms.Form):
     detail = forms.CharField(label="the details")
 
 
+class EditEntryForm(forms.Form):
+    """form to edit an entry"""
+    detail = forms.CharField(label="the details")
+
+
 def add(request):
     """Handles the form by checking if the form is valid,
     if it already exists and saves the form if it passes validation"""
@@ -74,22 +79,29 @@ def edit(request, title):
     """Handles the editing of the existing page"""
 
     if request.method == "POST":
-        form = NewEntryForm(request.POST)
-        if form.is_valid:
+        form = EditEntryForm(request.POST)
+        if form.is_valid():
             new_entry = form.cleaned_data["detail"]
             util.save_entry(title, new_entry)
             return redirect("entry", title=title)
+        else:
+            # form is invalid, error message
+            return HttpResponseBadRequest("Form is invalid")
     else:
         # GET
         # title = request.Get["title"]
         my_entry = util.get_entry(title)
 
-        return render(request, "encyclopedia/entry.html", {
+        return render(request, "encyclopedia/edit.html", {
             "entry": my_entry
         })
-    return render(request, "encyclopedia/edit.html", {
-        "entry": my_entry
-    })
+
+
+def random(request):
+    """generates a random page for the user"""
+    entries = util.list_entries()
+    title = choice(entries)
+    return redirect("entry", title=title)
 
 
 def details(request):

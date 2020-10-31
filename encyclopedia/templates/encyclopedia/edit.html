@@ -9,7 +9,7 @@
     <form method ="post">
         {% csrf_token %}
          <div class="form-group">
-            <textarea class="form-control" name="detail" rows="6" value ="{{entry}}"></textarea>
+            <textarea class="form-control" name="detail" rows="6">{{entry}}</textarea>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
