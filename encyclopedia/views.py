@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseBadRequest
 from django import forms
 import markdown2
+from .error_codes import TITLE_ALREADY_EXISTS, ERROR_MESSAGES, FORM_IS_INVALID, NOT_FOUND
 
 
 from . import util
@@ -25,7 +26,7 @@ def entry(request, title):
             "title": title
         })
 
-    return HttpResponseBadRequest("The page requested was not found")
+    return redirect("error", code=NOT_FOUND)
 
 
 def search(request):
@@ -65,7 +66,7 @@ def add(request):
             new_entry = form.cleaned_data["detail"]
             current_list = util.list_entries()
             if title in current_list:
-                return HttpResponseBadRequest("Title already exists in the encyclopedia")
+                return redirect("error", code=TITLE_ALREADY_EXISTS)
             else:
                 util.save_entry(title, new_entry)
                 return redirect("entry", title=title)
@@ -89,7 +90,7 @@ def edit(request, title):
             return redirect("entry", title=title)
         else:
             # form is invalid, error message
-            return HttpResponseBadRequest("Form is invalid")
+            return redirect("error", code=FORM_IS_INVALID)
     else:
         # GET
         # title = request.Get["title"]
@@ -107,6 +108,10 @@ def random(request):
     return redirect("entry", title=title)
 
 
-def details(request):
-    # title = title
-    print("todo")
+def error(request, code):
+    """generates an error page using the error_codes"""
+    error_message = ERROR_MESSAGES[code]
+
+    return render(request, "encyclopedia/error.html", {
+        "error": error_message
+    })
